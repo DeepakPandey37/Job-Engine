@@ -1,0 +1,51 @@
+just do these things in this old code,
+old code:
+
+import { configureStore } from "@reduxjs/toolkit";
+import authSlice from "./authslice";
+import jobSlice from "./jobSlice";
+
+const store = configureStore({
+  reducer: {
+    auth: authSlice,
+    job: jobSlice,
+  },
+});
+
+export default store;
+ 
+
+
+do this -----
+ npm i redux-persist
+
+ import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage"; // localStorage for web
+import { combineReducers } from "redux";
+//1
+const rootReducer = combineReducers({
+  auth: authSlice,
+  job: jobSlice,
+});
+
+// 2. Configure persist
+const persistConfig = {
+  key: "root",
+  storage,
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
+
+// 3. Create store with persisted reducer
+const store = configureStore({
+  reducer: persistedReducer,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // Important to prevent warnings with redux-persist
+    }),
+});
+
+// 4. Create persistor
+const persistor = persistStore(store);
+
+export { store, persistor };
